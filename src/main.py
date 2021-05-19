@@ -7,7 +7,7 @@ from evaluate import validate_model, plot_metrics
 
 def main():
     n_epoch, device, criterion, optimizer, model = load_config(CNN())
-    x, y = load_data(batch_size=64)
+    x, y = load_data(batch_size=450)
     kfold = StratifiedKFold(n_splits=10)
     train_losses = []
     valid_losses = []

@@ -1,6 +1,5 @@
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
-from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 import torch
 import torch.nn as nn
@@ -36,13 +35,13 @@ train_path = path+'FMD/'
 def load_data(batch_size):
     train_transform = transforms.Compose([transforms.ToPILImage(),
                                           transforms.ToTensor(),
-                                          transforms.Resize((75, 75)),
+                                          transforms.Resize((150, 150)),
                                           transforms.Normalize(0, 1)])
-
     data = FMDDataset(labels, train_path, train_transform)
-    data_loader = DataLoader(
-        dataset=data, batch_size=batch_size, shuffle=False)
-
+    data_loader = DataLoader(dataset=data,
+                             batch_size=batch_size,
+                             shuffle=True,
+                             num_workers=2)
     for data, target in data_loader:
         data = data
         target = target
@@ -51,7 +50,7 @@ def load_data(batch_size):
 
 def load_config(model):
     n_epoch = 5
-    learning_rate = 0.0001
+    learning_rate = 0.001
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)

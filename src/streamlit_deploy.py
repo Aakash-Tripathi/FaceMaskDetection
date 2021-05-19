@@ -1,4 +1,5 @@
 import streamlit as st
+from pred import prediction
 
 
 def main():
@@ -10,8 +11,10 @@ def main():
     file = st.file_uploader('')
 
     if file:
+        st.success('Image Uploaded')
+        pred = prediction(file)
+        st.write('PREDICTION:', pred)
         st.image(file)
-        st.success('Success message')
 
 
 if __name__ == '__main__':
