@@ -27,9 +27,10 @@ class FMDDataset(Dataset):
         return image, label
 
 
-path = 'D:/Projects/FaceMaskDetection/data/'
-labels = pd.read_csv(path+'train.csv')
-train_path = path+'FMD/'
+CWDpath = os.getcwd()
+path = (CWDpath + r'/data/')
+labels = pd.read_csv(path+r'train.csv')
+train_path = path+r'FMD/'
 
 
 def load_data(batch_size):
