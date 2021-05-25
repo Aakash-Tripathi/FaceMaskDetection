@@ -6,3 +6,4 @@ tqdm
 scipy
 streamlit
 Sphinx
+sphinx-rtd-theme
