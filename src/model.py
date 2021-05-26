@@ -5,15 +5,15 @@ import torch.nn.functional as F
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=24,
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=48,
                                kernel_size=1, stride=1, padding=1)
         self.relu1 = nn.ReLU()
         self.pool = nn.MaxPool2d(kernel_size=1)
-        self.conv2 = nn.Conv2d(in_channels=24, out_channels=12,
+        self.conv2 = nn.Conv2d(in_channels=48, out_channels=24,
                                kernel_size=1, stride=1, padding=1)
         self.drop = nn.Dropout2d(p=0.5)
         self.relu2 = nn.ReLU()
-        self.fc = nn.Linear(in_features=154*154*12, out_features=2)
+        self.fc = nn.Linear(in_features=154*154*24, out_features=2)
 
     def forward(self, input):
         output = self.conv1(input)

@@ -37,6 +37,10 @@ def load_data(batch_size):
     train_transform = transforms.Compose([transforms.ToPILImage(),
                                           transforms.ToTensor(),
                                           transforms.Resize((150, 150)),
+                                          transforms.RandomHorizontalFlip(
+                                              p=0.5),
+                                          transforms.GaussianBlur(
+                                              1, sigma=(0.1, 2.0)),
                                           transforms.Normalize(0, 1)])
     data = FMDDataset(labels, train_path, train_transform)
     data_loader = DataLoader(dataset=data,
