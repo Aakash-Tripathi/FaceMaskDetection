@@ -31,7 +31,7 @@ def main():
         valid_losses.append(valid_loss)
 
     plot_metrics(train_losses, valid_losses)
-    torch.save(model.state_dict(), 'best_checkpoint.pt')
+    torch.save(model.state_dict(), 'models/best_checkpoint.pt')
 
 
 if __name__ == '__main__':
