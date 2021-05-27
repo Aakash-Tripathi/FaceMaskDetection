@@ -7,3 +7,4 @@ scipy
 streamlit
 Sphinx
 sphinx-rtd-theme
+autopep8
