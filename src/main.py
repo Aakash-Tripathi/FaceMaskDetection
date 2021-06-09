@@ -1,38 +1,94 @@
 import torch
-from sklearn.model_selection import StratifiedKFold
-from model import CNN, train_model
-from loader import load_config, load_data
-from evaluate import validate_model, plot_metrics
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+import matplotlib.pyplot as plt
+from torchvision import models
+from loader import load_data
 
 
 def main():
-    n_epoch, device, criterion, optimizer, model = load_config(CNN())
-    x, y = load_data(batch_size=450)
-    kfold = StratifiedKFold(n_splits=10)
-    train_losses = []
-    valid_losses = []
+    # MODEL SETUP
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    net = models.resnet18(pretrained=True)
+    net = net.cuda() if device else net
+    num_ftrs = net.fc.in_features
+    net.fc = nn.Linear(num_ftrs, 128)
+    net.fc = net.fc.cuda()
 
-    for train_index, test_index in kfold.split(x, y):
-        train_loss = 0.0
-        valid_loss = 0.0
+    # CONFIG
+    n_epochs = 50
+    batch_size = 128
+    test_size = 0.33
+    lr = 0.0001
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
 
-        # TRAIN-TEST SPLIT
-        x_train, y_train = x[train_index], y[train_index]
-        x_test, y_test = x[test_index], y[test_index]
+    # LOAD DATA
+    train_dataloader, test_dataloader = load_data(batch_size, test_size)
 
-        # MODEL TRAINING
-        train_loss = train_model(model, x_train, y_train,
-                                 device, optimizer, criterion, n_epoch)
+    valid_loss_min = np.Inf
+    val_loss = []
+    val_acc = []
+    train_loss = []
+    train_acc = []
+    total_step = len(train_dataloader)
+    for epoch in range(1, n_epochs+1):
+        running_loss = 0.0
+        correct = 0
+        total = 0
+        for batch_idx, (data_, target_) in enumerate(train_dataloader):
+            data_, target_ = data_.to(device), target_.to(device)
+            optimizer.zero_grad()
+            outputs = net(data_)
+            loss = criterion(outputs, target_)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+            _, pred = torch.max(outputs, dim=1)
+            correct += torch.sum(pred == target_).item()
+            total += target_.size(0)
+            if (batch_idx) % 20 == 0:
+                print('\nEpoch [{}/{}], Loss: {:.4f}'.format(epoch,
+                      n_epochs, loss.item()))
+        train_acc.append(100*correct/total)
+        train_loss.append(running_loss/total_step)
+        train_loss_val = np.mean(train_loss)
+        print("train-loss: {:.4f}, train-acc: {:.4f}".format(
+            train_loss_val,
+            100*correct/total))
+        batch_loss = 0
+        total_t = 0
+        correct_t = 0
+        with torch.no_grad():
+            net.eval()
+            for data_t, target_t in (test_dataloader):
+                data_t, target_t = data_t.to(device), target_t.to(device)
+                outputs_t = net(data_t)
+                loss_t = criterion(outputs_t, target_t)
+                batch_loss += loss_t.item()
+                _, pred_t = torch.max(outputs_t, dim=1)
+                correct_t += torch.sum(pred_t == target_t).item()
+                total_t += target_t.size(0)
+            val_acc.append(100 * correct_t/total_t)
+            val_loss.append(batch_loss/len(test_dataloader))
+            network_learned = batch_loss < valid_loss_min
+            print('validation loss: {:.4f}, validation acc: {:.4f}\n'.format(
+                np.mean(val_loss), (100*correct_t/total_t)))
+            if network_learned:
+                valid_loss_min = batch_loss
+                torch.save(net.state_dict(), '/models/resnet.pt')
+                print('Improvement-Detected, save-model')
+        net.train()
 
-        # MODEL EVALUATION
-        valid_loss = validate_model(model, x_test, y_test,
-                                    device, criterion, n_epoch)
-        train_losses.append(train_loss)
-        valid_losses.append(valid_loss)
+    plt.title("Train-Validation Accuracy")
+    plt.plot(train_acc, label='train')
+    plt.plot(val_acc, label='validation')
+    plt.xlabel('num_epochs', fontsize=12)
+    plt.ylabel('accuracy', fontsize=12)
+    plt.legend(loc='best')
+    plt.show()
 
-    plot_metrics(train_losses, valid_losses)
-    torch.save(model.state_dict(), 'models/best_checkpoint.pt')
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

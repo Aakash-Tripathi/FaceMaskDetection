@@ -1,27 +1,31 @@
 import torch
+from torchvision import models
 import pathlib
 import glob
 from torchvision.transforms import transforms
 from torch.autograd import Variable
 from PIL import Image
-from model import CNN
+import torch.nn as nn
+import os
 
-path = 'D:/Projects/FaceMaskDetection/'
-#pred_path = 'D:/Projects/FaceMaskDetection/data/pred-from-set/'
-pred_path = 'D:/Projects/FaceMaskDetection/data/pred-new/'
-train_path = path+'FMD/'
+path = os.getcwd()
+# pred_path = path+'/data/pred-from-set/'
+pred_path = path+'/data/pred-new/'
+train_path = path+'/data/FMD/'
 root = pathlib.Path(train_path)
 classes = ['no mask', 'mask']
-checkpoint = torch.load(path+'models/best_checkpoint.pt')
-model = CNN()
+
+checkpoint = torch.load(path+'/models/resnet.pt')
+model = models.resnet18(pretrained=True)
+num_ftrs = model.fc.in_features
+model.fc = nn.Linear(num_ftrs, 128)
 model.load_state_dict(checkpoint)
 model.eval()
 
 
 def prediction(img_path):
-    transformer = transforms.Compose([
-        transforms.Resize((150, 150)),
-        transforms.ToTensor()])
+    transformer = transforms.Compose([transforms.Resize((150, 150)),
+                                      transforms.ToTensor()])
     image = Image.open(img_path)
     image_tensor = transformer(image).float()
     image_tensor = image_tensor.unsqueeze_(0)

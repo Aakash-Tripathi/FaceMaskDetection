@@ -1,11 +1,10 @@
 from torch.utils.data import Dataset
-import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-import torch
-import torch.nn as nn
-import os
-import pandas as pd
 import matplotlib.image as img
+import os
+from sklearn.model_selection import train_test_split
+import pandas as pd
+from torchvision import transforms
 
 
 class FMDDataset(Dataset):
@@ -27,37 +26,31 @@ class FMDDataset(Dataset):
         return image, label
 
 
-CWDpath = os.getcwd()
-path = (CWDpath + r'/data/')
-labels = pd.read_csv(path+r'train.csv')
-train_path = path+r'FMD/'
+def load_data(batch_size, test_size):
 
+    CWDpath = os.getcwd()
+    path = (CWDpath + r'/data/')
+    labels = pd.read_csv(path+r'train.csv')
+    train_path = path+r'FMD/'
 
-def load_data(batch_size):
-    train_transform = transforms.Compose([transforms.ToPILImage(),
-                                          transforms.ToTensor(),
-                                          transforms.Resize((150, 150)),
-                                          transforms.RandomHorizontalFlip(
-                                              p=0.5),
-                                          transforms.GaussianBlur(
-                                              1, sigma=(0.1, 2.0)),
-                                          transforms.Normalize(0, 1)])
-    data = FMDDataset(labels, train_path, train_transform)
-    data_loader = DataLoader(dataset=data,
-                             batch_size=batch_size,
-                             shuffle=True,
-                             num_workers=2)
-    for data, target in data_loader:
-        data = data
-        target = target
-    return data, target
+    transformer = transforms.Compose([transforms.ToPILImage(),
+                                      transforms.ToTensor(),
+                                      transforms.Resize((150, 150)),
+                                      transforms.RandomHorizontalFlip(p=0.5),
+                                      transforms.GaussianBlur(
+                                          1, sigma=(0.1, 2.0)),
+                                      transforms.Normalize(0, 1)])
 
+    train, valid = train_test_split(labels, test_size=test_size)
 
-def load_config(model):
-    n_epoch = 5
-    learning_rate = 0.001
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    model = model.to(device)
-    return n_epoch, device, criterion, optimizer, model
+    train_dataset = FMDDataset(train, train_path, transformer)
+    test_dataset = FMDDataset(valid, train_path, transformer)
+
+    train_dataloader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  shuffle=True)
+    test_dataloader = DataLoader(dataset=test_dataset,
+                                 batch_size=batch_size,
+                                 shuffle=True)
+
+    return train_dataloader, test_dataloader
