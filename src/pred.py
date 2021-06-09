@@ -1,21 +1,21 @@
 import torch
-from torchvision import *
+from torchvision import models
 import pathlib
 import glob
 from torchvision.transforms import transforms
 from torch.autograd import Variable
 from PIL import Image
 import torch.nn as nn
+import os
 
-
-path = 'D:/Projects/FaceMaskDetection/'
-#pred_path = 'D:/Projects/FaceMaskDetection/data/pred-from-set/'
-pred_path = 'D:/Projects/FaceMaskDetection/data/pred-new/'
-train_path = path+'FMD/'
+path = os.getcwd()
+# pred_path = path+'/data/pred-from-set/'
+pred_path = path+'/data/pred-new/'
+train_path = path+'/data/FMD/'
 root = pathlib.Path(train_path)
 classes = ['no mask', 'mask']
 
-checkpoint = torch.load(path+'models/resnet.pt')
+checkpoint = torch.load(path+'/models/resnet.pt')
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 128)
