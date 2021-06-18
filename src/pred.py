@@ -15,7 +15,7 @@ train_path = path+'/data/FMD/'
 root = pathlib.Path(train_path)
 classes = ['no mask', 'mask']
 
-checkpoint = torch.load(path+'/models/resnet.pt')
+checkpoint = torch.load(path+r'/../models/resnet.pt')
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 128)
