@@ -1,5 +1,5 @@
 import streamlit as st
-from pred import prediction
+from src.pred import prediction
 
 
 def main():
