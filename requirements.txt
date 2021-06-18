@@ -1,11 +1,5 @@
 pandas
 numpy
-matplotlib
 sklearn
-tqdm
-scipy
 streamlit
-Sphinx
-sphinx-rtd-theme
-autopep8
 torch
