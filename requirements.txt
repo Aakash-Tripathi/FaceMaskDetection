@@ -8,3 +8,4 @@ streamlit
 Sphinx
 sphinx-rtd-theme
 autopep8
+torch
