@@ -15,7 +15,9 @@ train_path = path+'/data/FMD/'
 root = pathlib.Path(train_path)
 classes = ['no mask', 'mask']
 
-checkpoint = torch.load(path+r'/models/resnet.pt')
+# Temp change to force cpu use -- to test heroku deployment
+checkpoint = torch.load(path+r'/models/resnet.pt',
+                        map_location=torch.device('cpu'))
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 128)
