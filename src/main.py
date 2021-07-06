@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
 from torchvision import models
+import os
 from loader import load_data
 
 
@@ -20,9 +21,8 @@ def main():
     n_epochs = 50
     batch_size = 128
     test_size = 0.33
-    lr = 0.0001
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.9)
 
     # LOAD DATA
     train_dataloader, test_dataloader = load_data(batch_size, test_size)
@@ -32,7 +32,7 @@ def main():
     val_acc = []
     train_loss = []
     train_acc = []
-    total_step = len(train_dataloader)
+
     for epoch in range(1, n_epochs+1):
         running_loss = 0.0
         correct = 0
@@ -52,7 +52,7 @@ def main():
                 print('\nEpoch [{}/{}], Loss: {:.4f}'.format(epoch,
                       n_epochs, loss.item()))
         train_acc.append(100*correct/total)
-        train_loss.append(running_loss/total_step)
+        train_loss.append(running_loss/len(train_dataloader))
         train_loss_val = np.mean(train_loss)
         print("train-loss: {:.4f}, train-acc: {:.4f}".format(
             train_loss_val,
@@ -77,10 +77,19 @@ def main():
                 np.mean(val_loss), (100*correct_t/total_t)))
             if network_learned:
                 valid_loss_min = batch_loss
-                torch.save(net.state_dict(), '/models/resnet.pt')
+                torch.save(net.state_dict(), os.getcwd()+'/models/resnet.pt')
                 print('Improvement-Detected, save-model')
         net.train()
+    plot_acc(train_acc, val_acc)
 
+
+def plot_acc(train_acc, val_acc):
+    """[summary]
+
+    Args:
+        train_acc (array): training accuracy data
+        val_acc (array): validation accuracy data
+    """
     plt.title("Train-Validation Accuracy")
     plt.plot(train_acc, label='train')
     plt.plot(val_acc, label='validation')
