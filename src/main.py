@@ -27,7 +27,6 @@ def main():
     # LOAD DATA
     train_dataloader, test_dataloader = load_data(batch_size, test_size)
 
-    # test comment
     valid_loss_min = np.Inf
     val_loss = []
     val_acc = []
