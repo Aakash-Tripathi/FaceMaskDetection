@@ -2,10 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-import matplotlib.pyplot as plt
 from torchvision import models
 import os
+
 from loader import load_data
+from metrics import plot_acc
 
 
 def main():
@@ -81,22 +82,6 @@ def main():
                 print('Improvement-Detected, save-model')
         net.train()
     plot_acc(train_acc, val_acc)
-
-
-def plot_acc(train_acc, val_acc):
-    """[summary]
-
-    Args:
-        train_acc (array): training accuracy data
-        val_acc (array): validation accuracy data
-    """
-    plt.title("Train-Validation Accuracy")
-    plt.plot(train_acc, label='train')
-    plt.plot(val_acc, label='validation')
-    plt.xlabel('num_epochs', fontsize=12)
-    plt.ylabel('accuracy', fontsize=12)
-    plt.legend(loc='best')
-    plt.show()
 
 
 if __name__ == "__main__":
