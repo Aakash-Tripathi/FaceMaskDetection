@@ -19,7 +19,7 @@ def prediction(img_path, model):
         [type]: [description]
     """
     classes = ['no mask', 'mask']
-    transformer = transforms.Compose([transforms.Resize((150, 150)),
+    transformer = transforms.Compose([transforms.Resize((256, 256)),
                                       transforms.ToTensor()])
     image = Image.open(img_path)
     image_tensor = transformer(image).float()

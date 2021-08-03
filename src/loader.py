@@ -76,7 +76,7 @@ def load_data(batch_size, test_size):
 
     transformer = transforms.Compose([transforms.ToPILImage(),
                                       transforms.ToTensor(),
-                                      transforms.Resize((150, 150)),
+                                      transforms.Resize((256, 256)),
                                       transforms.RandomHorizontalFlip(p=0.5),
                                       transforms.GaussianBlur(
                                           1, sigma=(0.1, 2.0)),

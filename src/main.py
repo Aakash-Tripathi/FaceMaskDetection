@@ -18,9 +18,8 @@ def main():
     net.fc = nn.Linear(num_ftrs, 128)
     net.fc = net.fc.cuda()
 
-    # CONFIG
     n_epochs = 50
-    batch_size = 128
+    batch_size = 256
     test_size = 0.33
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.9)
