@@ -1,6 +1,5 @@
 import torch
 from torchvision import models
-import pathlib
 import glob
 from torchvision.transforms import transforms
 from torch.autograd import Variable
@@ -10,14 +9,6 @@ import os
 
 
 def prediction(img_path, model):
-    """[summary]
-
-    Args:
-        img_path ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
     classes = ['no mask', 'mask']
     transformer = transforms.Compose([transforms.Resize((256, 256)),
                                       transforms.ToTensor()])
@@ -37,10 +28,7 @@ def main():
     path = os.getcwd()
     # pred_path = path+'/data/pred-from-set/'
     pred_path = path+'/data/pred-new/'
-    train_path = path+'/data/FMD/'
-    root = pathlib.Path(train_path)
 
-    # Temp change to force cpu use -- to test heroku deployment
     checkpoint = torch.load(path+r'/models/resnet.pt',
                             map_location=torch.device('cpu'))
     model = models.resnet18(pretrained=True)

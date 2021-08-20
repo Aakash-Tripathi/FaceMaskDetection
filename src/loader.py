@@ -1,9 +1,3 @@
-"""
-Loader Package
--------------------------
-This package loads all the required data
-"""
-
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import matplotlib.image as img
@@ -14,42 +8,16 @@ from torchvision import transforms
 
 
 class FMDDataset(Dataset):
-    """[summary]
-
-    Args:
-        Dataset ([type]): [description]
-    """
-
     def __init__(self, data, path, transform=None):
-        """[summary]
-
-        Args:
-            data ([type]): [description]
-            path ([type]): [description]
-            transform ([type], optional): [description]. Defaults to None.
-        """
         super().__init__()
         self.data = data.values
         self.path = path
         self.transform = transform
 
     def __len__(self):
-        """[summary]
-
-        Returns:
-            [type]: [description]
-        """
         return len(self.data)
 
     def __getitem__(self, index):
-        """[summary]
-
-        Args:
-            index ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
         img_name, label = self.data[index]
         img_path = os.path.join(self.path, img_name)
         image = img.imread(img_path)
@@ -59,16 +27,6 @@ class FMDDataset(Dataset):
 
 
 def load_data(batch_size, test_size):
-    """[summary]
-
-    Args:
-        batch_size ([type]): [description]
-        test_size ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
-
     CWDpath = os.getcwd()
     path = (CWDpath + r'/data/')
     labels = pd.read_csv(path+r'train.csv')

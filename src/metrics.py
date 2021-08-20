@@ -1,10 +1,6 @@
-import pandas as pd
-import seaborn as sn
-import platform
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy
-from scipy import stats
+
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_auc_score
 
