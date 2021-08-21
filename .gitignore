@@ -1,11 +1,4 @@
-\src-legacy
 \data
-\dataset
-FMD-env
-\FMD-env
 \.vscode
-\old-files
-old-files
-\planning
 __pycache__
 venv
