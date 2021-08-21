@@ -8,7 +8,6 @@ from torchvision import transforms
 
 class FMDDataset(Dataset):
     def __init__(self, data, path, transform=None):
-        super().__init__()
         self.data = data.values
         self.path = path
         self.transform = transform
