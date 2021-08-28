@@ -4,7 +4,6 @@ from torchvision.transforms import transforms
 from PIL import Image
 import glob
 import os
-from tqdm import tqdm
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -35,6 +34,7 @@ def main():
     TODO: Feed in the OpenCV Data to prediction()
     TODO: Display prediciton on the bounding boxes
     """
+    from tqdm import tqdm
     path = os.getcwd()
     pred_path = path+'/data/test/'
 
