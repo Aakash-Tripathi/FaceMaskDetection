@@ -5,7 +5,8 @@ from src.pred import prediction
 def main():
     st.title('FACE MASK DETECTION')
     instructions = """
-        Add Instructions here
+        ! Warning Grayscale images are not yet supported
+        Please upload an image with only one person in it.
         """
     st.write(instructions)
     file = st.file_uploader('')
