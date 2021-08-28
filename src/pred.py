@@ -8,10 +8,18 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def prediction(img_path, model):
+def prediction(img_path):
     """
     ! FUNCTION FAILS IF THE IMAGE IS GREYSCALE
     """
+    checkpoint = torch.load(path+r'/models/resnet.pt',
+                            map_location=torch.device('cpu'))
+    model = models.resnet18(pretrained=True)
+    num_ftrs = model.fc.in_features
+    model.fc = torch.nn.Linear(num_ftrs, 128)
+    model.load_state_dict(checkpoint)
+    model.eval()
+
     classes = ['no mask', 'mask']
     transformer = transforms.Compose([transforms.Resize((256, 256)),
                                       transforms.ToTensor()])
@@ -38,18 +46,10 @@ def main():
     path = os.getcwd()
     pred_path = path+'/data/test/'
 
-    checkpoint = torch.load(path+r'/models/resnet.pt',
-                            map_location=torch.device('cpu'))
-    model = models.resnet18(pretrained=True)
-    num_ftrs = model.fc.in_features
-    model.fc = torch.nn.Linear(num_ftrs, 128)
-    model.load_state_dict(checkpoint)
-    model.eval()
-
     images_path = glob.glob(pred_path+'/*.jpg')
     pred_dict = {}
     for i in tqdm(images_path, desc='Loading Files'):
-        pred_dict[i[i.rfind('/')+1:]] = prediction(i, model)
+        pred_dict[i[i.rfind('/')+1:]] = prediction(i)
 
     for key, value in pred_dict.items():
         print(key, ':', value)
