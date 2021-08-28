@@ -12,7 +12,7 @@ def prediction(img_path):
     """
     ! FUNCTION FAILS IF THE IMAGE IS GREYSCALE
     """
-    checkpoint = torch.load(path+r'/models/resnet.pt',
+    checkpoint = torch.load(os.getcwd()+r'/models/resnet.pt',
                             map_location=torch.device('cpu'))
     model = models.resnet18(pretrained=True)
     num_ftrs = model.fc.in_features
@@ -43,10 +43,9 @@ def main():
     TODO: Display prediciton on the bounding boxes
     """
     from tqdm import tqdm
-    path = os.getcwd()
-    pred_path = path+'/data/test/'
-
+    pred_path = os.getcwd()+'/data/test/'
     images_path = glob.glob(pred_path+'/*.jpg')
+
     pred_dict = {}
     for i in tqdm(images_path, desc='Loading Files'):
         pred_dict[i[i.rfind('/')+1:]] = prediction(i)
