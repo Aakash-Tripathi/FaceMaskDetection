@@ -1,14 +1,18 @@
 import torch
 from torchvision import models
-import glob
 from torchvision.transforms import transforms
-from torch.autograd import Variable
 from PIL import Image
-import torch.nn as nn
+import glob
 import os
+from tqdm import tqdm
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def prediction(img_path, model):
+    """
+    ! FUNCTION FAILS IF THE IMAGE IS GREYSCALE
+    """
     classes = ['no mask', 'mask']
     transformer = transforms.Compose([transforms.Resize((256, 256)),
                                       transforms.ToTensor()])
@@ -17,7 +21,7 @@ def prediction(img_path, model):
     image_tensor = image_tensor.unsqueeze_(0)
     if torch.cuda.is_available():
         image_tensor.cuda()
-    input = Variable(image_tensor)
+    input = torch.autograd.Variable(image_tensor)
     output = model(input)
     index = output.data.numpy().argmax()
     pred = classes[index]
@@ -25,21 +29,26 @@ def prediction(img_path, model):
 
 
 def main():
+    """
+    TODO: serial the each new model with its performance on the test dataset
+    TODO: Use OpenCV to find faces (masked and unmasked) & make bounding boxes
+    TODO: Feed in the OpenCV Data to prediction()
+    TODO: Display prediciton on the bounding boxes
+    """
     path = os.getcwd()
-    # pred_path = path+'/data/pred-from-set/'
-    pred_path = path+'/data/pred-new/'
+    pred_path = path+'/data/test/'
 
     checkpoint = torch.load(path+r'/models/resnet.pt',
                             map_location=torch.device('cpu'))
     model = models.resnet18(pretrained=True)
     num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, 128)
+    model.fc = torch.nn.Linear(num_ftrs, 128)
     model.load_state_dict(checkpoint)
     model.eval()
 
     images_path = glob.glob(pred_path+'/*.jpg')
     pred_dict = {}
-    for i in images_path:
+    for i in tqdm(images_path, desc='Loading Files'):
         pred_dict[i[i.rfind('/')+1:]] = prediction(i, model)
 
     for key, value in pred_dict.items():
